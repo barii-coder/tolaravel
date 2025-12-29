@@ -1,4 +1,4 @@
-<div class="w-full" style="margin: 10px" wire:poll.5s>
+<div class="w-full" style="margin: 10px" wire:poll.1s>
     <div class="mb-6 flex justify-between items-center m-5" dir="rtl">
         <h1 class="text-2xl font-bold text-gray-700">پنل پیام‌های ادمین‌ها</h1>
         <div class="flex gap-3">
@@ -7,12 +7,27 @@
         </div>
     </div>
     <div class="bg-gray-200 border-l rounded-b-2xl float-left m-2 w-[24%] max-h-[800px]" style="overflow: auto">
-        <div class="bg-blue-600 text-white p-4 rounded-t-2xl font-bold text-center">
+        <div class="bg-blue-600 text-white p-4 rounded-t-2xl font-bold text-center z-10"
+             style="position: sticky;top: 0">
             چت‌های در جریان
         </div>
         <ul class="space-y-2 text-sm overflow-scroll">
+            @error('prices')
+            <div class="relative w-full max-w-md mx-auto">
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <strong class="font-bold">خطا! </strong>
+                    <span class="block sm:inline">{{ $message }}</span>
+                    <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.remove()">
+                        <svg class="fill-current h-6 w-6 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <title>Close</title>
+                            <path d="M14.348 5.652a1 1 0 00-1.414 0L10 8.586 7.066 5.652a1 1 0 10-1.414 1.414L8.586 10l-2.934 2.934a1 1 0 101.414 1.414L10 11.414l2.934 2.934a1 1 0 001.414-1.414L11.414 10l2.934-2.934a1 1 0 000-1.414z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            @enderror
             @foreach($messages as $message)
-                <li class="p-2 rounded-lg">
+                <li class="p-2 rounded-lg" wire:key="message-{{ $message->id }}">
                     <p class="text-right">
                         کاربر شماره {{$message->user_id}}
                     </p>
@@ -21,21 +36,30 @@
                         <p class="inline-block">
                             {{$message->code}}
                         </p>
-                        <button class="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition" wire:click="code_answer('a',{{ $message->id }})">a</button>
-                        <button class="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition" wire:click="chat_answer('k',{{ $message->id }})">k</button>
-                        <button class="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition" wire:click="chat_answer('h',{{ $message->id }})">h</button>
-                        <button class="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition" wire:click="chat_answer('x',{{ $message->id }})">x</button>
+                        <button class="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition"
+                                wire:click="code_answer('a',{{ $message->id }})">a
+                        </button>
+                        <button class="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition"
+                                wire:click="code_answer('k',{{ $message->id }})">k
+                        </button>
+                        <button class="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition"
+                                wire:click="code_answer('h',{{ $message->id }})">h
+                        </button>
+                        <button class="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition"
+                                wire:click="code_answer('x',{{ $message->id }})">x
+                        </button>
                     </div>
                     <div class="bg-white"
                          style="margin: 15px 5px 0 5px;padding: 0;border-radius: 10px;height: 40px;overflow: hidden;position:relative;">
                         <input type="text"
                                class="h-[40px] pl-1 w-full bg-white"
-                               wire:model.defer="prices.{{$message->id}}">
+                               wire:model.defer="prices.{{$message->id}}"
+                               wire:keydown.enter="submit_answer({{ $message->id }})">
                         <button type="submit"
                                 wire:click="submit_answer({{ $message->id }})"
                                 class="inline-block px-4 py-2 bg-blue-600 text-white"
                                 style="position:absolute;right: 0;height: 100%">
-                            submit
+                            ثبت
                         </button>
                     </div>
                 </li>
@@ -44,52 +68,86 @@
     </div>
 
     <div class="bg-gray-200 border-l h-full rounded-b-2xl float-left m-2 w-[24%]" style="overflow: auto">
-        <div class="bg-blue-600 text-white p-4 rounded-t-2xl font-bold text-center">
+        <div class="bg-blue-600 text-white p-4 rounded-t-2xl font-bold text-center z-10"
+             style="position: sticky;top: 0">
             منتظر برسی
         </div>
         <ul class="space-y-2 text-sm">
             @foreach($answers as $answer)
-                <li class="p-2 rounded-lg relative">
+                <li class="p-2 rounded-lg relative" wire:key="answer-{{ $answer->id }}">
                     <img class="w-[40px] rounded-[100px] inline-block" src="/IMG/prof.jpg" alt="">
                     <div class="inline-block text-center absolute w-4/5 left-0 right-0 z-0">
-                        <p>کد محصول : {{ $answer->message->code }}</p>
-                        <p>پاسخ : {{ $answer->price }}</p>
+                        <p class="z-0">کد محصول : {{ $answer->message->code }}</p>
+                        <p class="z-0">پاسخ : {{ $answer->price }}</p>
                     </div>
-                    <button
-                        wire:click="check_answer({{$answer->message->id }})"
-                        class="px-4 py-2 rounded-xl float-right bg-blue-600 text-white cursor-pointer z-10">checked
-                    </button>
+                    @if($answer->respondent_id != null)
+                        <button
+                            wire:click="i_had_it({{$answer->message->id }})"
+                            class="px-3 py-2 rounded-xl float-right mx-1 bg-blue-600 text-white cursor-pointer z-10">
+                            ثبت شد
+                        </button>
+                        <button
+                            wire:click="i_had_it({{$answer->message->id }})"
+                            class="px-3 py-2 rounded-xl float-right mx-1 bg-blue-600 text-white cursor-pointer z-10">
+                            من برداشتم
+                        </button>
+                    @else
+                        <button
+                            wire:click="check_answer({{$answer->message->id }})"
+                            class="px-4 py-2 rounded-xl float-right bg-blue-600 text-white cursor-pointer z-10">checked
+                        </button>
+                    @endif
                 </li>
             @endforeach
         </ul>
     </div>
 
     <div class="bg-gray-200 border-l rounded-b-2xl float-left m-2 w-[24%]" style="overflow: auto">
-        <div class="bg-blue-600 text-white p-4 rounded-t-2xl font-bold text-center">
+        <div class="bg-blue-600 text-white p-4 rounded-t-2xl font-bold text-center z-10"
+             style="position: sticky;top: 0">
             منتظر قیمت
         </div>
         <ul class="space-y-2 text-sm">
-            <li class="p-2 rounded-lg">
-                <img class="w-[40px] rounded-[100px] inline-block" src="/IMG/prof.jpg" alt="">
-                <p class="inline-block">کد محصول</p>
-                <div class="bg-white"
-                     style="margin: 15px 5px 0 5px;padding: 0;border-radius: 10px;height: 40px;overflow: hidden;position:relative;">
-                    <input type="text"
-                           class="h-[40px] pl-1 w-full bg-white"
-                           wire:model.defer="prices.{{@$message->id}}">
-                    <button type="button"
-                            wire:click="submit_answer({{@$message->id }})"
-                            class="inline-block px-4 py-2 bg-blue-600 text-white font-medium hover:bg-blue-700 transition active:scale-95 m-0"
-                            style="position:absolute;right: 0;height: 100%">
-                        submit
+            @error('prices')
+            <div class="relative w-full max-w-md mx-auto">
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <strong class="font-bold">خطا! </strong>
+                    <span class="block sm:inline">{{ $message }}</span>
+                    <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.remove()">
+                        <svg class="fill-current h-6 w-6 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <title>Close</title>
+                            <path d="M14.348 5.652a1 1 0 00-1.414 0L10 8.586 7.066 5.652a1 1 0 10-1.414 1.414L8.586 10l-2.934 2.934a1 1 0 101.414 1.414L10 11.414l2.934 2.934a1 1 0 001.414-1.414L11.414 10l2.934-2.934a1 1 0 000-1.414z"/>
+                        </svg>
                     </button>
                 </div>
-            </li>
+            </div>
+            @enderror
+            @foreach($wait_for_price as $message)
+                <li class="p-2 rounded-lg" wire:key="wait-message-{{ $message->id }}">
+                    <img class="w-[40px] rounded-[100px] inline-block" src="/IMG/prof.jpg" alt="">
+                    <p class="inline-block">{{$message->code}}</p>
+                    <div class="bg-white"
+                         style="margin: 15px 5px 0 5px;padding: 0;border-radius: 10px;height: 40px;overflow: hidden;position:relative;">
+                        <input type="text"
+                               class="h-[40px] pl-1 w-full bg-white"
+                               wire:model.defer="prices.{{$message->id}}"
+                               wire:keydown.enter="submit_answer({{ $message->id }})">
+                        <button type="button"
+                                wire:click="submit_answer({{@$message->id }})"
+                                class="inline-block px-4 py-2 bg-blue-600 text-white font-medium hover:bg-blue-700 transition active:scale-95 m-0"
+                                style="position:absolute;right: 0;height: 100%">
+                            ثبت
+                        </button>
+                    </div>
+                </li>
+            @endforeach
+
         </ul>
     </div>
 
-    <div class="bg-gray-200 border-l rounded-b-2xl float-left m-2 w-[24%]" style="overflow: auto">
-        <div class="bg-blue-600 text-white p-4 rounded-t-2xl font-bold text-center">
+    <div class="bg-gray-200 border-l max-h-[500px] rounded-b-2xl float-left m-2 w-[24%]" style="overflow: auto">
+        <div class="bg-blue-600 text-white p-4 rounded-t-2xl font-bold text-center z-10"
+             style="position: sticky;top: 0">
             تکمیل شده
         </div>
         <ul class="space-y-2 text-sm">
@@ -97,17 +155,13 @@
                 <li class="p-2 rounded-lg">
                     <img class="w-[40px] rounded-[100px] inline-block" src="/IMG/prof.jpg" alt="">
                     <p class="inline-block">{{$chat->code}}</p>
-                    |
-                    <p class="inline-block">قیمت: {{$chat->answer->price ?? '---'}}</p>
                 </li>
             @endforeach
         </ul>
     </div>
 
-    <button id="chat-btn">💬</button>
-
     <form wire:submit.prevent="submit" id="chat-box">
-        <div id="chat-header">پشتیبانی آنلاین</div>
+        <div id="chat-header">ارسال پیام</div>
 
         <div id="chat-body">
             <div class="msg bot">.کد محصول مورد نظر را وارد بنمایید</div>

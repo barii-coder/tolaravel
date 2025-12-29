@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('user_id');
             $table->string('message_id');
             $table->string('price');
+            $table->string('respondent_id')->nullable();
             $table->timestamps();
         });
     }
