@@ -1,42 +1,4 @@
 <?php
-//
-//namespace App\Livewire\Admin\Home;
-//
-//use App\Models\answers;
-//use App\Models\messages;
-//use Livewire\Component;
-//
-//class Index extends Component
-//{
-//    public $test;
-//    public $prices = [];
-//
-//    public function submit()
-//    {
-//        messages::query()->create([
-//            'user_id' => '1',
-//            'code' => $this->test,
-//        ]);
-//    }
-//
-//    public function submit_answer($id)
-//    {
-//        answers::query()->create([
-//            'user_id' => '1',
-//            'message_id' => $id,
-//            'price' => $this->prices[$id],
-//        ]);
-//        return redirect()->back();
-//    }
-//
-//
-//    public function render()
-//    {
-//        $messages = messages::all();
-//        return view('livewire.admin.home.index',compact('messages'));
-//    }
-//}
-
 
 namespace App\Livewire\Admin\Home;
 
@@ -92,6 +54,13 @@ class Index extends Component
         $this->prices = [];
     }
 
+    public function save_for_ad_price($messageId)
+    {
+        Message::query()->where('id', $messageId)->update([
+            'chat_in_progress' => '3',
+        ]);
+    }
+
     public function check_answer($id)
     {
         Message::query()->where('id', $id)->update([
@@ -105,23 +74,34 @@ class Index extends Component
             'user_id' => '1',
             'message_id' => $id,
             'price' => $chat_code,
-            'respondent_id' => '1',
+            'respondent_by_code' => '1',
         ]);
         Message::query()->where('id', $id)->update([
             'chat_in_progress' => '1',
         ]);
     }
 
-    public function i_had_it($id)
+    public function i_had_it($messageId)
     {
-        Message::query()->where('id', $id)->update([
-            'chat_in_progress' => '3',
+        $answer = Answer::where('message_id', $messageId)->first();
+
+        $name = $answer->respondent_name = 'ادمین 3';
+        $id = $answer->respondent_id = $this->user_id;
+        Answer::query()->where('message_id', $messageId)->update([
+            'respondent_name' => $name,
+            'respondent_id' => $id,
         ]);
+
     }
+
 
     public function render()
     {
-        $messages = Message::query()->where('chat_in_progress', '2')->get();
+//        $messages = Message::query()->where('chat_in_progress', '2')->get();
+        $messages = Message::query()
+            ->where('chat_in_progress', '2')
+            ->orderBy('created_at', 'desc') // جدیدترین پیام‌ها بالا
+            ->get();
         $wait_for_price = Message::query()->where('chat_in_progress', '3')->get();
         $ended_chats = Message::query()->where('chat_in_progress', '0')->get();
         $answers = Answer::query()
@@ -129,8 +109,7 @@ class Index extends Component
                 $q->where('chat_in_progress', '1');
             })
             ->get();
-//        dd($answers);
 
-        return view('livewire.admin.home.index', compact('messages', 'ended_chats', 'answers','wait_for_price'));
+        return view('livewire.admin.home.index', compact('messages', 'ended_chats', 'answers','wait_for_price'))->layout('layouts.admin.app');
     }
 }

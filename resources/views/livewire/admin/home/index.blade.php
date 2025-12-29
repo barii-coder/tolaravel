@@ -1,31 +1,37 @@
+@extends('layouts.admin.app')
+
+@section('content')
 <div class="w-full" style="margin: 10px" wire:poll.1s>
-    <div class="mb-6 flex justify-between items-center m-5" dir="rtl">
+    <div class="mb-4 flex justify-between items-center m-5" dir="rtl">
         <h1 class="text-2xl font-bold text-gray-700">پنل پیام‌های ادمین‌ها</h1>
         <div class="flex gap-3">
             <button class="bg-white p-2 rounded-xl shadow">📩</button>
             <button class="bg-white p-2 rounded-xl shadow">👤</button>
         </div>
     </div>
-    <div class="bg-gray-200 border-l rounded-b-2xl float-left m-2 w-[24%] max-h-[800px]" style="overflow: auto">
+    @error('prices')
+    <div class="relative w-full max-w-md mx-auto">
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <strong class="font-bold">خطا! </strong>
+            <span class="block sm:inline">{{ $message }}</span>
+            <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3"
+                    onclick="this.parentElement.remove()">
+                <svg class="fill-current h-6 w-6 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <title>Close</title>
+                    <path
+                        d="M14.348 5.652a1 1 0 00-1.414 0L10 8.586 7.066 5.652a1 1 0 10-1.414 1.414L8.586 10l-2.934 2.934a1 1 0 101.414 1.414L10 11.414l2.934 2.934a1 1 0 001.414-1.414L11.414 10l2.934-2.934a1 1 0 000-1.414z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+    @enderror
+    <br>
+    <div class="bg-gray-200 border-l rounded-2xl float-left m-2 md:w-[24%] w-full max-h-[800px]" style="overflow: auto">
         <div class="bg-blue-600 text-white p-4 rounded-t-2xl font-bold text-center z-10"
              style="position: sticky;top: 0">
             چت‌های در جریان
         </div>
         <ul class="space-y-2 text-sm overflow-scroll">
-            @error('prices')
-            <div class="relative w-full max-w-md mx-auto">
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                    <strong class="font-bold">خطا! </strong>
-                    <span class="block sm:inline">{{ $message }}</span>
-                    <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.remove()">
-                        <svg class="fill-current h-6 w-6 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                            <title>Close</title>
-                            <path d="M14.348 5.652a1 1 0 00-1.414 0L10 8.586 7.066 5.652a1 1 0 10-1.414 1.414L8.586 10l-2.934 2.934a1 1 0 101.414 1.414L10 11.414l2.934 2.934a1 1 0 001.414-1.414L11.414 10l2.934-2.934a1 1 0 000-1.414z"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            @enderror
             @foreach($messages as $message)
                 <li class="p-2 rounded-lg" wire:key="message-{{ $message->id }}">
                     <p class="text-right">
@@ -54,6 +60,7 @@
                         <input type="text"
                                class="h-[40px] pl-1 w-full bg-white"
                                wire:model.defer="prices.{{$message->id}}"
+                               placeholder="قیمت"
                                wire:keydown.enter="submit_answer({{ $message->id }})">
                         <button type="submit"
                                 wire:click="submit_answer({{ $message->id }})"
@@ -67,7 +74,8 @@
         </ul>
     </div>
 
-    <div class="bg-gray-200 border-l h-full rounded-b-2xl float-left m-2 w-[24%]" style="overflow: auto">
+    <div class="bg-gray-200 border-l h-full rounded-2xl float-left m-2 md:w-[24%] w-full max-h-[800px]"
+         style="overflow: auto">
         <div class="bg-blue-600 text-white p-4 rounded-t-2xl font-bold text-center z-10"
              style="position: sticky;top: 0">
             منتظر برسی
@@ -76,25 +84,32 @@
             @foreach($answers as $answer)
                 <li class="p-2 rounded-lg relative" wire:key="answer-{{ $answer->id }}">
                     <img class="w-[40px] rounded-[100px] inline-block" src="/IMG/prof.jpg" alt="">
-                    <div class="inline-block text-center absolute w-4/5 left-0 right-0 z-0">
+                    <div class="inline-block text-center">
                         <p class="z-0">کد محصول : {{ $answer->message->code }}</p>
                         <p class="z-0">پاسخ : {{ $answer->price }}</p>
                     </div>
-                    @if($answer->respondent_id != null)
-                        <button
-                            wire:click="i_had_it({{$answer->message->id }})"
-                            class="px-3 py-2 rounded-xl float-right mx-1 bg-blue-600 text-white cursor-pointer z-10">
-                            ثبت شد
-                        </button>
-                        <button
-                            wire:click="i_had_it({{$answer->message->id }})"
-                            class="px-3 py-2 rounded-xl float-right mx-1 bg-blue-600 text-white cursor-pointer z-10">
-                            من برداشتم
-                        </button>
+                    @if($answer->respondent_by_code != null)
+                        @if($answer->respondent_id != null)
+                            <button
+                                wire:click="save_for_ad_price({{$answer->message->id }})"
+                                class="px-3 py-2 rounded-xl float-right mx-1 bg-blue-600 text-white cursor-pointer z-10">
+                                ثبت شد
+                            </button>
+                            <span class="px-3 py-2 rounded-xl float-right mx-1 bg-green-600 text-white">
+  پاسخ از :                  {{$answer->respondent_name}}
+        </span>
+                        @else
+                            <button
+                                wire:click="i_had_it({{$answer->message->id }})"
+                                class="px-3 py-2 rounded-xl float-right mx-1 bg-blue-600 text-white cursor-pointer z-10">
+                                من برداشتم
+                            </button>
+                        @endif
                     @else
                         <button
                             wire:click="check_answer({{$answer->message->id }})"
-                            class="px-4 py-2 rounded-xl float-right bg-blue-600 text-white cursor-pointer z-10">checked
+                            class="px-4 py-2 rounded-xl float-right bg-blue-600 text-white cursor-pointer z-10">
+                            برسی شد
                         </button>
                     @endif
                 </li>
@@ -102,26 +117,12 @@
         </ul>
     </div>
 
-    <div class="bg-gray-200 border-l rounded-b-2xl float-left m-2 w-[24%]" style="overflow: auto">
+    <div class="bg-gray-200 border-l rounded-2xl float-left m-2 md:w-[24%] w-full max-h-[800px]" style="overflow: auto">
         <div class="bg-blue-600 text-white p-4 rounded-t-2xl font-bold text-center z-10"
              style="position: sticky;top: 0">
             منتظر قیمت
         </div>
         <ul class="space-y-2 text-sm">
-            @error('prices')
-            <div class="relative w-full max-w-md mx-auto">
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                    <strong class="font-bold">خطا! </strong>
-                    <span class="block sm:inline">{{ $message }}</span>
-                    <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.remove()">
-                        <svg class="fill-current h-6 w-6 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                            <title>Close</title>
-                            <path d="M14.348 5.652a1 1 0 00-1.414 0L10 8.586 7.066 5.652a1 1 0 10-1.414 1.414L8.586 10l-2.934 2.934a1 1 0 101.414 1.414L10 11.414l2.934 2.934a1 1 0 001.414-1.414L11.414 10l2.934-2.934a1 1 0 000-1.414z"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            @enderror
             @foreach($wait_for_price as $message)
                 <li class="p-2 rounded-lg" wire:key="wait-message-{{ $message->id }}">
                     <img class="w-[40px] rounded-[100px] inline-block" src="/IMG/prof.jpg" alt="">
@@ -131,6 +132,7 @@
                         <input type="text"
                                class="h-[40px] pl-1 w-full bg-white"
                                wire:model.defer="prices.{{$message->id}}"
+                               placeholder="قیمت"
                                wire:keydown.enter="submit_answer({{ $message->id }})">
                         <button type="button"
                                 wire:click="submit_answer({{@$message->id }})"
@@ -145,7 +147,7 @@
         </ul>
     </div>
 
-    <div class="bg-gray-200 border-l max-h-[500px] rounded-b-2xl float-left m-2 w-[24%]" style="overflow: auto">
+    <div class="bg-gray-200 border-l max-h-[500px] rounded-2xl float-left m-2 md:w-[24%] w-full" style="overflow: auto">
         <div class="bg-blue-600 text-white p-4 rounded-t-2xl font-bold text-center z-10"
              style="position: sticky;top: 0">
             تکمیل شده
@@ -205,3 +207,4 @@
         }
     </script>
 </div>
+@endsection

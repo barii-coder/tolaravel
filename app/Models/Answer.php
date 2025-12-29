@@ -12,4 +12,10 @@ class Answer extends Model
     {
         return $this->belongsTo(Message::class, 'message_id');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'respondent_id');
+    }
+
 }

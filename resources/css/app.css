@@ -32,7 +32,7 @@
 /* پنجره چت */
 #chat-box {
     position: fixed;
-    bottom: 9px;
+    bottom: 20px;
     right: 20px;
     width: 340px;
     height: 280px;

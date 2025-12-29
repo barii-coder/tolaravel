@@ -16,7 +16,9 @@ return new class extends Migration
             $table->string('user_id');
             $table->string('message_id');
             $table->string('price');
-            $table->string('respondent_id')->nullable();
+            $table->unsignedBigInteger('respondent_id')->nullable();
+            $table->string('respondent_name')->nullable();
+            $table->string('respondent_by_code')->nullable();
             $table->timestamps();
         });
     }
