@@ -30,8 +30,6 @@ class Index extends Component
 
     public function submit()
     {
-//        $this->validate();
-
         Message::query()->create([
             'user_id' => '1',
             'code' => $this->test,
@@ -110,6 +108,6 @@ class Index extends Component
             })
             ->get();
 
-        return view('livewire.admin.home.index', compact('messages', 'ended_chats', 'answers','wait_for_price'))->layout('layouts.admin.app');
+        return view('livewire.admin.home.index', compact('messages', 'ended_chats', 'answers','wait_for_price'));
     }
 }

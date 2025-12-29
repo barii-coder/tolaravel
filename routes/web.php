@@ -4,8 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use \App\Livewire\Admin\Home\Index;
 
-Route::get('/',[Index::class, 'render']);
+Route::get('/', Index::class)->name('home');
 
+Route::get('/submit', \App\Livewire\Admin\Support\Index::class);
 // Login
 Route::get('/login', fn() => view('login'))->name('login');
 Route::post('/login', [AuthController::class, 'login']);

@@ -1,6 +1,3 @@
-@extends('layouts.admin.app')
-
-@section('content')
 <div class="w-full" style="margin: 10px" wire:poll.1s>
     <div class="mb-4 flex justify-between items-center m-5" dir="rtl">
         <h1 class="text-2xl font-bold text-gray-700">پنل پیام‌های ادمین‌ها</h1>
@@ -207,4 +204,3 @@
         }
     </script>
 </div>
-@endsection
