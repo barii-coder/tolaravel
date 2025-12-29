@@ -63,7 +63,10 @@
                                 wire:click="submit_answer({{ $message->id }})"
                                 class="inline-block px-4 py-2 bg-blue-600 text-white"
                                 style="position:absolute;right: 0;height: 100%">
-                            ثبت
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send">
+                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                            </svg>
                         </button>
                     </div>
                 </li>
@@ -90,7 +93,9 @@
                             <button
                                 wire:click="save_for_ad_price({{$answer->message->id }})"
                                 class="px-3 py-2 rounded-xl float-right mx-1 bg-blue-600 text-white cursor-pointer z-10">
-                                ثبت شد
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 21C12 21 5 14 5 9C5 6.23858 7.23858 4 10 4C11.6569 4 13 5.34315 13 7C13 5.34315 14.3431 4 16 4C18.7614 4 21 6.23858 21 9C21 14 12 21 12 21Z"/>
+                                </svg>
                             </button>
                             <span class="px-3 py-2 rounded-xl float-right mx-1 bg-green-600 text-white">
   پاسخ از :                  {{$answer->respondent_name}}
@@ -106,7 +111,9 @@
                         <button
                             wire:click="check_answer({{$answer->message->id }})"
                             class="px-4 py-2 rounded-xl float-right bg-blue-600 text-white cursor-pointer z-10">
-                            برسی شد
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
                         </button>
                     @endif
                 </li>
@@ -135,7 +142,10 @@
                                 wire:click="submit_answer({{@$message->id }})"
                                 class="inline-block px-4 py-2 bg-blue-600 text-white font-medium hover:bg-blue-700 transition active:scale-95 m-0"
                                 style="position:absolute;right: 0;height: 100%">
-                            ثبت
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send">
+                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                            </svg>
                         </button>
                     </div>
                 </li>
