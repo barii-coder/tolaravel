@@ -1,4 +1,4 @@
-<div class="w-full" style="margin: 10px" wire:poll.1s>
+<div class="w-full" style="margin: 10px" wire:poll..1s>
     <div class="mb-4 flex justify-between items-center m-5" dir="rtl">
         <h1 class="text-2xl font-bold text-gray-700">پنل پیام‌های ادمین‌ها</h1>
         <div class="flex gap-3">
@@ -23,7 +23,7 @@
     </div>
     @enderror
     <br>
-    <div class="bg-gray-200 border-l rounded-2xl float-left m-2 md:w-[24%] w-full max-h-[800px]" style="overflow: auto">
+    <div class="bg-gray-200 border-l rounded-2xl float-left m-2 w-[24%] max-h-[800px]" style="overflow: auto">
         <div class="bg-blue-600 text-white p-4 rounded-t-2xl font-bold text-center z-10"
              style="position: sticky;top: 0">
             چت‌های در جریان
@@ -31,12 +31,10 @@
         <ul class="space-y-2 text-sm overflow-scroll">
             @foreach($messages as $message)
                 <li class="p-2 rounded-lg" wire:key="message-{{ $message->id }}">
-                    <p class="text-right">
-                        کاربر شماره {{$message->user_id}}
-                    </p>
+                    <br>
                     <img class="w-[40px] rounded-[100px] inline-block" src="/IMG/prof.jpg" alt="">
                     <div id="productCode" class="inline-block">
-                        <p class="inline-block">
+                        <p class="inline-block m-[3px]" style="font-size: 13pt">
                             {{$message->code}}
                         </p>
                         <button class="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition"
@@ -63,7 +61,9 @@
                                 wire:click="submit_answer({{ $message->id }})"
                                 class="inline-block px-4 py-2 bg-blue-600 text-white"
                                 style="position:absolute;right: 0;height: 100%">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                 class="feather feather-send">
                                 <line x1="22" y1="2" x2="11" y2="13"></line>
                                 <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                             </svg>
@@ -74,7 +74,7 @@
         </ul>
     </div>
 
-    <div class="bg-gray-200 border-l h-full rounded-2xl float-left m-2 md:w-[24%] w-full max-h-[800px]"
+    <div class="bg-gray-200 border-l h-full rounded-2xl float-left m-2 w-[24%] max-h-[800px]"
          style="overflow: auto">
         <div class="bg-blue-600 text-white p-4 rounded-t-2xl font-bold text-center z-10"
              style="position: sticky;top: 0">
@@ -83,35 +83,53 @@
         <ul class="space-y-2 text-sm">
             @foreach($answers as $answer)
                 <li class="p-2 rounded-lg relative" wire:key="answer-{{ $answer->id }}">
-                    <img class="w-[40px] rounded-[100px] inline-block" src="/IMG/prof.jpg" alt="">
-                    <div class="inline-block text-center">
-                        <p class="z-0">کد محصول : {{ $answer->message->code }}</p>
-                        <p class="z-0">پاسخ : {{ $answer->price }}</p>
+                    <img class="w-[40px] rounded-[100px] inline-block middle" src="/IMG/prof.jpg" alt="">
+                    <div class="inline-block middle">
+                        <p class="z-0 text-center cursor-pointer bg-gray-400 text-white rounded text-center p-2" onclick="copyText(this)"><i>{{ $answer->message->code }}</i></p>
+                        <p class="z-0 text-center">{{ $answer->price }}</p>
                     </div>
                     @if($answer->respondent_by_code != null)
                         @if($answer->respondent_id != null)
                             <button
                                 wire:click="save_for_ad_price({{$answer->message->id }})"
                                 class="px-3 py-2 rounded-xl float-right mx-1 bg-blue-600 text-white cursor-pointer z-10">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M12 21C12 21 5 14 5 9C5 6.23858 7.23858 4 10 4C11.6569 4 13 5.34315 13 7C13 5.34315 14.3431 4 16 4C18.7614 4 21 6.23858 21 9C21 14 12 21 12 21Z"/>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                     stroke-linejoin="round">
+                                    <path
+                                        d="M12 21C12 21 5 14 5 9C5 6.23858 7.23858 4 10 4C11.6569 4 13 5.34315 13 7C13 5.34315 14.3431 4 16 4C18.7614 4 21 6.23858 21 9C21 14 12 21 12 21Z"/>
                                 </svg>
                             </button>
                             <span class="px-3 py-2 rounded-xl float-right mx-1 bg-green-600 text-white">
   پاسخ از :                  {{$answer->respondent_name}}
         </span>
                         @else
-                            <button
-                                wire:click="i_had_it({{$answer->message->id }})"
-                                class="px-3 py-2 rounded-xl float-right mx-1 bg-blue-600 text-white cursor-pointer z-10">
-                                من برداشتم
-                            </button>
+                            @if($answer->price == 'x')
+                                <span class="px-3 py-2 rounded-xl float-right mx-1 bg-red-600 text-white">
+                                    محصول نا موجود
+                                </span>
+                                <button
+                                    wire:click="check_answer({{$answer->message->id }})"
+                                    class="px-4 py-2 rounded-xl float-right bg-blue-600 text-white cursor-pointer z-10">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                </button>
+                            @else
+                                <button
+                                    wire:click="i_had_it({{$answer->message->id }})"
+                                    class="px-3 py-2 rounded-xl float-right mx-1 bg-blue-600 text-white cursor-pointer z-10">
+                                    من برداشتم
+                                </button>
+                            @endif
                         @endif
                     @else
                         <button
                             wire:click="check_answer({{$answer->message->id }})"
                             class="px-4 py-2 rounded-xl float-right bg-blue-600 text-white cursor-pointer z-10">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
                         </button>
@@ -142,7 +160,9 @@
                                 wire:click="submit_answer({{@$message->id }})"
                                 class="inline-block px-4 py-2 bg-blue-600 text-white font-medium hover:bg-blue-700 transition active:scale-95 m-0"
                                 style="position:absolute;right: 0;height: 100%">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                 class="feather feather-send">
                                 <line x1="22" y1="2" x2="11" y2="13"></line>
                                 <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                             </svg>
@@ -211,6 +231,17 @@
 
             input.value = "";
             chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        function copyText(element) {
+            const text = element.innerText;
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    alert("متن کپی شد ✅");
+                })
+                .catch(err => {
+                    console.error("خطا در کپی:", err);
+                });
         }
     </script>
 </div>

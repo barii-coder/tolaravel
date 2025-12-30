@@ -6,26 +6,22 @@ use App\Models\Answer;
 use App\Models\Message;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use function PHPUnit\Framework\isFalse;
 
 class Index extends Component
 {
     public $test;
     public $prices = [];
 
-    public $user_id = 1;
-
     protected $rules = [
         'prices' => 'required|array|min:1',
-        'prices.*' => 'required|numeric|min:0',
+        'prices.*' => 'required|string|min:0',
     ];
 
     protected $messages = [
         'prices.required' => 'حداقل یک قیمت وارد کنید',
         'prices.array' => 'فرمت قیمت‌ها نامعتبر است',
         'prices.min' => 'حداقل یک قیمت وارد کنید',
-        'prices.*.required' => 'قیمت نمی‌تواند خالی باشد',
-        'prices.*.numeric' => 'قیمت باید عدد باشد',
-        'prices.*.min' => 'قیمت نمی‌تواند منفی باشد',
     ];
 
 
@@ -41,16 +37,30 @@ class Index extends Component
     public function submit_answer($id)
     {
         $this->validate();
+        $a = Answer::query()->where('message_id', $id)->get();
 
-        Answer::query()->create([
-            'user_id' => '1',
-            'message_id' => $id,
-            'price' => $this->prices[$id] ?? null,
-        ]);
-        Message::query()->where('id', $id)->update([
-            'chat_in_progress' => '1',
-        ]);
-        $this->prices = [];
+        if ($a->isEmpty()) {
+            Answer::query()->create([
+                'user_id' => '1',
+                'message_id' => $id,
+                'price' => $this->prices[$id] ?? null,
+            ]);
+            Message::query()->where('id', $id)->update([
+                'chat_in_progress' => '1',
+            ]);
+            $this->prices = [];
+        } else {
+            Answer::query()->where('message_id', $id)->update([
+                'price' => $this->prices[$id] ?? null,
+                'respondent_by_code' => '',
+                'respondent_name' => '',
+            ]);
+            Message::query()->where('id', $id)->update([
+                'chat_in_progress' => '1',
+            ]);
+            $this->prices = [];
+
+        }
     }
 
     public function save_for_ad_price($messageId)
@@ -69,6 +79,9 @@ class Index extends Component
 
     public function code_answer($chat_code, $id)
     {
+        $user = Auth::user();
+//        dd($user);
+//        $user_id = $user->id;
         Answer::query()->create([
             'user_id' => '1',
             'message_id' => $id,
@@ -94,6 +107,9 @@ class Index extends Component
             'respondent_name' => $name,
             'respondent_id' => $id,
         ]);
+        Message::query()->where('id', $id)->update([
+            'chat_in_progress' => '1',
+        ]);
     }
 
     public function render()
@@ -111,7 +127,7 @@ class Index extends Component
             ->whereHas('message', function ($q) {
                 $q->where('chat_in_progress', '1');
             })
-            ->orderBy('created_at', 'desc') // جدیدترین جواب‌ها اول
+            ->orderBy('created_at', 'desc')
             ->get();
 
 
