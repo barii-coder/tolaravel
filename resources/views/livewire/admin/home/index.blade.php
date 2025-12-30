@@ -85,20 +85,41 @@
                 <li class="p-2 rounded-lg relative" wire:key="answer-{{ $answer->id }}">
                     <img class="w-[40px] rounded-[100px] inline-block middle" src="/IMG/prof.jpg" alt="">
                     <div class="inline-block middle">
-                        <p class="z-0 text-center cursor-pointer bg-gray-400 text-white rounded text-center p-2" onclick="copyText(this)"><i>{{ $answer->message->code }}</i></p>
-                        <p class="z-0 text-center">{{ $answer->price }}</p>
+                        <p class="z-0   inline-flex items-center justify-center
+  px-5 py-2
+  bg-slate-400
+  text-white text-sm font-semibold
+  rounded-xl
+  shadow-md
+  ring-2 ring-slate-300" onclick="copyText(this)"><i>{{ $answer->message->code }}</i></p>
+                        <p class="z-0   inline-flex items-center justify-center
+  px-6 py-2
+  bg-gradient-to-r from-green-500 to-emerald-500
+  text-white text-sm font-bold
+  rounded-full
+  shadow-lg
+  ring-2 ring-green-300">{{ $answer->price }}</p>
                     </div>
                     @if($answer->respondent_by_code != null)
                         @if($answer->respondent_id != null)
                             <button
                                 wire:click="save_for_ad_price({{$answer->message->id }})"
                                 class="px-3 py-2 rounded-xl float-right mx-1 bg-blue-600 text-white cursor-pointer z-10">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                     stroke-linejoin="round">
-                                    <path
-                                        d="M12 21C12 21 5 14 5 9C5 6.23858 7.23858 4 10 4C11.6569 4 13 5.34315 13 7C13 5.34315 14.3431 4 16 4C18.7614 4 21 6.23858 21 9C21 14 12 21 12 21Z"/>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path d="M5 12h14" />
+                                    <path d="M13 6l6 6-6 6" />
                                 </svg>
+
                             </button>
                             <span class="px-3 py-2 rounded-xl float-right mx-1 bg-green-600 text-white">
   پاسخ از :                  {{$answer->respondent_name}}
