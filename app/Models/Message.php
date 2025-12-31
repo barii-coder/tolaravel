@@ -12,4 +12,9 @@ class Message  extends Model
     {
         return $this->hasMany(Answer::class, 'message_id');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

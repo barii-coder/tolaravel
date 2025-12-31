@@ -6,10 +6,17 @@ use App\Models\Answer;
 use App\Models\Message;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
-use function PHPUnit\Framework\isFalse;
+
 
 class Index extends Component
 {
+    // chat_in_progress
+    //  ENDED = 0;
+    //  ANSWERED = 1;
+    //  NEW = 2;
+    //  WAIT_FOR_PRICE = 3;
+
+
     public $test;
     public $prices = [];
 
@@ -24,11 +31,20 @@ class Index extends Component
         'prices.min' => 'حداقل یک قیمت وارد کنید',
     ];
 
+     public function mount()
+ {
+     if (!Auth::check()) {
+         abort(403);
+     }
+ }
+
 
     public function submit()
     {
+        $user = Auth::user();
+
         Message::query()->create([
-            'user_id' => '1',
+            'user_id' => $user->id,
             'code' => $this->test,
             'chat_in_progress' => '2',
         ]);
@@ -37,7 +53,7 @@ class Index extends Component
     public function submit_answer($id)
     {
         $this->validate();
-        $a = Answer::query()->where('message_id', $id)->get();
+        $a = Answer::query()->where('message_id', $id)->get();;
 
         if ($a->isEmpty()) {
             Answer::query()->create([
@@ -80,10 +96,9 @@ class Index extends Component
     public function code_answer($chat_code, $id)
     {
         $user = Auth::user();
-//        dd($user);
-//        $user_id = $user->id;
+
         Answer::query()->create([
-            'user_id' => '1',
+            'user_id' => $user->id,
             'message_id' => $id,
             'price' => $chat_code,
             'respondent_by_code' => '1',
@@ -97,17 +112,17 @@ class Index extends Component
     {
         $answer = Answer::where('message_id', $messageId)->first();
 
-        // نام و آیدی کاربر فعلی
         $user = Auth::user();
         $name = $user->name;
+        $prof = $user->profile_image_path;
         $id = $user->id;
 
-        // بروزرسانی رکورد
         $answer->update([
             'respondent_name' => $name,
+            'respondent_profile_image_path' => $prof,
             'respondent_id' => $id,
         ]);
-        Message::query()->where('id', $id)->update([
+        Message::query()->where('id', $messageId)->update([
             'chat_in_progress' => '1',
         ]);
     }
@@ -127,10 +142,11 @@ class Index extends Component
             ->whereHas('message', function ($q) {
                 $q->where('chat_in_progress', '1');
             })
-            ->orderBy('created_at', 'desc')
+            ->orderBy('updated_at', 'desc')
             ->get();
+        $user = Auth::user();
 
 
-        return view('livewire.admin.home.index', compact('messages', 'ended_chats', 'answers', 'wait_for_price'));
+        return view('livewire.admin.home.index', compact('messages', 'ended_chats', 'answers', 'wait_for_price', 'user'));
     }
 }
