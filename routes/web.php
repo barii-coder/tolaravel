@@ -17,5 +17,5 @@ Route::get('/register', fn() => view('register'))->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 
 // Dashboard
-Route::get('/dashboard', fn() => 'Welcome!')->middleware('auth');
+Route::get('/dashboard', Index::class)->middleware('auth');
 

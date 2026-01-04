@@ -20,9 +20,13 @@
     </p>
 
     <div class="flex justify-center gap-3">
-        <a href="{{ url('/') }}"
+        <a href="/register"
            class="px-5 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition">
-            صفحه اصلی
+            ثبت نام
+        </a>
+        <a href="/login"
+           class="px-5 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition">
+            ورود
         </a>
 
         @auth

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('user_id');
             $table->string('code');
             $table->string('chat_in_progress');
+            $table->string('final_price')->nullable();
             $table->timestamps();
         });
     }
