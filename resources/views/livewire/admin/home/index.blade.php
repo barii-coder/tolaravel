@@ -169,7 +169,7 @@
                                     </svg>
                                 </button>
                                 <span class="px-3 py-2 rounded-xl float-right mx-1 bg-green-500 text-white">
-                                    خوب نیست
+                                    g
                                 </span>
                             @elseif($answer->price === 'L')
                                 <button
@@ -220,10 +220,13 @@
                     <img width="30px" class="rounded-2xl inline-block" src="{{$message->user->profile_image_path}}"
                          alt="">
                     <span onclick="copyText(this)" class="cursor-pointer">{{ $message->code }}</span>
-                    <input type="text" class="bg-white">
-                    <button class="p-1 px-3 rounded-xl float-right bg-red-600 text-white cursor-pointer"
+                    <button class="p-1 px-3 rounded-xl float-right bg-red-600 text-white cursor-pointer mx-2"
                             wire:click="price_is_unavailable({{$message->id}})">
                         X
+                    </button>
+                    <button class="p-1 px-3 rounded-xl float-right bg-green-500 text-white cursor-pointer"
+                            wire:click="code_answer('{{ 'g' }}', {{ $message->id }})">
+                        G
                     </button>
 
                     <div class="bg-white mt-3 rounded-lg h-10 relative overflow-hidden">
